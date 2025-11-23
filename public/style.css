@@ -12,6 +12,8 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
+
+  transition: background-color 0.25s ease, color 0.25s ease;
 }
 
 .app {
@@ -21,6 +23,9 @@ body {
   box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
   width: 100%;
   max-width: 480px;
+
+  transition: background-color 0.25s ease, box-shadow 0.25s ease,
+    border-color 0.25s ease;
 }
 
 h1 {
@@ -82,10 +87,21 @@ h1 {
   gap: 8px;
   padding: 8px 0;
   border-bottom: 1px solid #e5e7eb;
+
+  opacity: 0;
+  transform: translateY(4px);
+  animation: todo-fade-in 0.18s ease-out forwards;
 }
 
 .todo-list li:last-child {
   border-bottom: none;
+}
+
+@keyframes todo-fade-in {
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .todo-list li span {
@@ -98,6 +114,7 @@ h1 {
   height: 16px;
 }
 
+/* Buttons */
 .todo-list button {
   border: none;
   border-radius: 6px;
@@ -124,6 +141,20 @@ h1 {
   background: #dc2626;
 }
 
+button,
+.theme-toggle,
+.filters button,
+.todo-form button {
+  transition: background-color 0.15s ease, color 0.15s ease, transform 0.1s ease;
+}
+
+button:hover:not(:disabled),
+.theme-toggle:hover,
+.filters button:hover:not(:disabled),
+.todo-form button:hover {
+  transform: translateY(-1px);
+}
+
 .todo-list li span[style*="line-through"] {
   color: #6b7280;
 }
@@ -148,7 +179,7 @@ h1 {
   background: #e5e7eb;
 }
 
-/* ===== Dark mode overrides ===== */
+/* Dark mode overrides*/
 
 body.dark {
   background: #020617;
