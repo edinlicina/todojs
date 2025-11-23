@@ -1,4 +1,5 @@
 let todos = [];
+let currentFilter = "all";
 
 async function fetchTodosFromApi() {
   const response = await fetch("/api/todos");
@@ -71,7 +72,25 @@ const todoListElement = document.getElementById("todoList");
 const todoForm = document.getElementById("todoForm");
 const todoInput = document.getElementById("todoInput");
 
-// DOM creation
+const filterAllButton = document.getElementById("filterAll");
+const filterActiveButton = document.getElementById("filterActive");
+const filterCompletedButton = document.getElementById("filterCompleted");
+
+function getFilteredTodos() {
+  if (currentFilter === "active") {
+    return todos.filter((t) => !t.done);
+  }
+  if (currentFilter === "completed") {
+    return todos.filter((t) => t.done);
+  }
+  return todos; //all
+}
+
+function updateFilterButtons() {
+  filterActiveButton.disabled = currentFilter === "all";
+  filterActiveButton.disabled = currentFilter === "active";
+  filterCompletedButton.disabled = currentFilter === "completed";
+}
 
 function createTodoListItem(todo) {
   const li = document.createElement("li");
@@ -145,10 +164,13 @@ function createTodoListItem(todo) {
 function renderTodos() {
   todoListElement.innerHTML = "";
 
-  todos.forEach((todo) => {
+  const visibleTodos = getFilteredTodos();
+
+  visibleTodos.forEach((todo) => {
     const li = createTodoListItem(todo);
     todoListElement.appendChild(li);
   });
+  updateFilterButtons();
 }
 
 async function refreshFromServer() {
@@ -177,6 +199,21 @@ todoForm.addEventListener("submit", async (event) => {
     console.error(error);
     alert("Could not create todo.");
   }
+});
+
+filterAllButton.addEventListener("click", () => {
+  currentFilter = "all";
+  renderTodos();
+});
+
+filterActiveButton.addEventListener("click", () => {
+  currentFilter = "active";
+  renderTodos();
+});
+
+filterCompletedButton.addEventListener("click", () => {
+  currentFilter = "completed";
+  renderTodos();
 });
 
 async function init() {
