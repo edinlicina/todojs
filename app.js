@@ -38,7 +38,7 @@ app.post("/api/todos", (req, res) => {
 
 app.put("/api/todos/:id", (req, res) => {
   const id = Number(req.params.id);
-  const todo = todo.find((t) => t.id === id);
+  const todo = todos.find((t) => t.id === id);
 
   if (!todo) {
     return res.status(404).json({ error: "Todo not found." });

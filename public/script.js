@@ -1,16 +1,51 @@
-const STORAGE_KEY = "todos-demo-app";
 let todos = [];
 
-function getDefaultTodos() {
-  return [
-    { id: 1, text: "Lern JS and frontend basics", done: false },
-    {
-      id: 2,
-      text: "Understand how back and frontend communicate",
-      done: false,
-    },
-    { id: 3, text: "Build a real todo app step by step", done: true },
-  ];
+async function fetchTodosFromApi() {
+  const response = await fetch("/api/todos");
+  if (!response.ok) {
+    throw new Error("Failed to load todos from server");
+  }
+  return await response.json();
+}
+
+async function createTodoOnServer(text) {
+  const response = await fetch("/api/todos", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ text }),
+  });
+
+  if (!response.ok) {
+    throw new Error("Failes to create todo");
+  }
+
+  return await response.json();
+}
+
+async function updateTodoOnServer(id, data) {
+  const response = await fetch(`/api/todos/${id}`, {
+    method: "PUT",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(data),
+  });
+
+  if (!response.ok) {
+    const errorText = await response.text();
+    console.error("Update failed:", response.status, errorText);
+    throw new Error("Failed to update todo");
+  }
+
+  return await response.json();
+}
+
+async function deleteTodoOnServer(id) {
+  const response = await fetch(`/api/todos/${id}`, {
+    method: "DELETE",
+  });
+
+  if (!response.ok) {
+    throw new Error("Failed to delete todo");
+  }
 }
 
 function loadTodos() {
@@ -32,39 +67,9 @@ function loadTodos() {
   }
 }
 
-function saveTodos() {
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(todos));
-}
-
 const todoListElement = document.getElementById("todoList");
 const todoForm = document.getElementById("todoForm");
 const todoInput = document.getElementById("todoInput");
-
-//Todo operations
-
-function addTodo(text) {
-  const newTodo = {
-    id: Date.now(),
-    text: text,
-    done: false,
-  };
-  todos.push(newTodo);
-}
-
-function updateTodoText(todo, newText) {
-  todo.text = newText;
-}
-
-function toggleTodoDone(todo, done) {
-  todo.done = done;
-}
-
-function deleteTodoById(id) {
-  const index = todos.findIndex((t) => t.id === id);
-  if (index !== -1) {
-    todos.splice(index, 1);
-  }
-}
 
 // DOM creation
 
@@ -74,10 +79,20 @@ function createTodoListItem(todo) {
   const checkbox = document.createElement("input");
   checkbox.type = "checkbox";
   checkbox.checked = todo.done;
-  checkbox.addEventListener("change", () => {
-    toggleTodoDone(todo, checkbox.checked);
-    saveAndRender();
+  checkbox.addEventListener("change", async () => {
+    try {
+      await updateTodoOnServer(todo.id, {
+        done: checkbox.checked,
+        text: todo.text,
+      });
+      await refreshFromServer();
+    } catch (error) {
+      console.error(error);
+      alert("Could not update todo.");
+      checkbox.checked = !checkbox.checked;
+    }
   });
+
   //Text
   const span = document.createElement("span");
   span.textContent = " " + todo.text;
@@ -89,28 +104,34 @@ function createTodoListItem(todo) {
   const editButton = document.createElement("button");
   editButton.type = "button";
   editButton.textContent = "Edit";
-
-  editButton.addEventListener("click", () => {
-    //prefill with old todo and ask user for new todo
+  editButton.addEventListener("click", async () => {
     const newText = prompt("Edit todo:", todo.text);
-    //upon cancel do nothing
     if (newText === null) return;
 
-    //trim spaces and ignore empty edit
     const trimmed = newText.trim();
     if (!trimmed) return;
 
-    updateTodoText(todo, trimmed);
-    saveAndRender();
+    try {
+      await updateTodoOnServer(todo.id, { text: trimmed, done: todo.done });
+      await refreshFromServer();
+    } catch (error) {
+      console.error(error);
+      alert("Could not edit todo.");
+    }
   });
 
   //Delete Button
   const deleteButton = document.createElement("button");
   deleteButton.type = "button";
   deleteButton.textContent = "Delete";
-  deleteButton.addEventListener("click", () => {
-    deleteTodoById(todo.id);
-    saveAndRender();
+  deleteButton.addEventListener("click", async () => {
+    try {
+      await deleteTodoOnServer(todo.id);
+      await refreshFromServer();
+    } catch (error) {
+      console.error(error);
+      alert("Could not delete todo.");
+    }
   });
 
   li.appendChild(checkbox);
@@ -130,12 +151,17 @@ function renderTodos() {
   });
 }
 
-function saveAndRender() {
-  saveTodos();
-  renderTodos();
+async function refreshFromServer() {
+  try {
+    todos = await fetchTodosFromApi();
+    renderTodos();
+  } catch (error) {
+    console.error(error);
+    alert("Could not load todos from server.");
+  }
 }
 
-todoForm.addEventListener("submit", (event) => {
+todoForm.addEventListener("submit", async (event) => {
   event.preventDefault();
 
   const text = todoInput.value.trim();
@@ -143,14 +169,18 @@ todoForm.addEventListener("submit", (event) => {
     return;
   }
 
-  addTodo(text);
-  todoInput.value = "";
-  saveAndRender();
+  try {
+    await createTodoOnServer(text);
+    todoInput.value = "";
+    await refreshFromServer();
+  } catch (error) {
+    console.error(error);
+    alert("Could not create todo.");
+  }
 });
 
-function init() {
-  loadTodos();
-  renderTodos();
+async function init() {
+  await refreshFromServer();
 }
 
 init();
