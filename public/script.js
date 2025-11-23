@@ -76,6 +76,27 @@ const filterAllButton = document.getElementById("filterAll");
 const filterActiveButton = document.getElementById("filterActive");
 const filterCompletedButton = document.getElementById("filterCompleted");
 
+const themeToggleButton = document.getElementById("themeToggle");
+
+function applyTheme(theme) {
+  if (theme === "dark") {
+    document.body.classList.add("dark");
+    themeToggleButton.textContent = "Light mode";
+  } else {
+    document.body.classList.remove("dark");
+    themeToggleButton.textContent = "DarkMode";
+  }
+}
+
+function loadTheme() {
+  const saved = localStorage.getItem("theme");
+  if (saved === "dark" || saved == "light") {
+    applyTheme(saved);
+  } else {
+    applyTheme("light");
+  }
+}
+
 function getFilteredTodos() {
   if (currentFilter === "active") {
     return todos.filter((t) => !t.done);
@@ -216,7 +237,15 @@ filterCompletedButton.addEventListener("click", () => {
   renderTodos();
 });
 
+themeToggleButton.addEventListener("click", () => {
+  const isDark = !document.body.classList.contains("dark");
+  const newTheme = isDark ? "dark" : "light";
+  applyTheme(newTheme);
+  localStorage.setItem("theme", newTheme);
+});
+
 async function init() {
+  loadTheme();
   await refreshFromServer();
 }
 
