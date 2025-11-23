@@ -1,8 +1,37 @@
-const todos = [
-  { id: 1, text: "Lern JS and frontend basics", done: false },
-  { id: 2, text: "Understand how back and frontend communicate", done: false },
-  { id: 3, text: "Build a real todo app step by step", done: true },
-];
+const STORAGE_KEY = "todos-demo-app";
+let todos = [];
+
+function getDefaultTodos() {
+  return [
+    { id: 1, text: "Lern JS and frontend basics", done: false },
+    {
+      id: 2,
+      text: "Understand how back and frontend communicate",
+      done: false,
+    },
+    { id: 3, text: "Build a real todo app step by step", done: true },
+  ];
+}
+
+function loadTodos() {
+  const stored = localStorage.getItem(STORAGE_KEY);
+
+  if (stored) {
+    try {
+      todos = JSON.parse(stored);
+    } catch (e) {
+      console.error(
+        "Failed to parse todos from localStorage, using defaults.",
+        e
+      );
+      todos = getDefaultTodos();
+    }
+  }
+}
+
+function saveTodos() {
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(todos));
+}
 
 const todoListElement = document.getElementById("todoList");
 const todoForm = document.getElementById("todoForm");
@@ -49,6 +78,7 @@ function renderTodos() {
       }
 
       todo.text = trimmed;
+      saveTodos();
       renderTodos();
     });
 
@@ -60,6 +90,7 @@ function renderTodos() {
       const index = todos.findIndex((t) => t.id === todo.id);
       if (index !== -1) {
         todos.splice(index, 1);
+        saveTodos();
         renderTodos();
       }
     });
@@ -68,6 +99,7 @@ function renderTodos() {
     li.appendChild(span);
     li.appendChild(editButton);
     li.appendChild(deleteButton);
+
     todoListElement.appendChild(li);
   });
 }
@@ -89,8 +121,11 @@ todoForm.addEventListener("submit", (event) => {
   };
 
   todos.push(newTodo); //add to db
+  saveTodos();
   todoInput.value = "";
   renderTodos();
 });
+
+loadTodos();
 
 renderTodos();
