@@ -25,7 +25,7 @@ app.post("/api/todos", (req, res) => {
       .status(400)
       .json({ error: "Field 'text' is required and must not be empty." });
   }
-
+  //comment for commit
   const newTodo = {
     id: nextId++,
     text: text.trim(),
