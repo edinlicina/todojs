@@ -1,0 +1,129 @@
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+    Oxygen, Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
+
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.app {
+  background: #ffffff;
+  padding: 24px 28px;
+  border-radius: 12px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
+  width: 100%;
+  max-width: 480px;
+}
+
+h1 {
+  font-size: 1.6rem;
+  margin-bottom: 16px;
+  text-align: center;
+  color: #000;
+}
+
+.todo-form {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+
+.todo-form input[type="text"] {
+  flex: 1;
+  padding: 10px 12px;
+  border-radius: 8px;
+  border: 1px solid #d1d5db;
+  font-size: 0.95rem;
+}
+
+.todo-form button {
+  padding: 10px 16px;
+  border-radius: 8px;
+  border: none;
+  background: blue;
+  color: #ffffff;
+  font-weight: 500;
+  cursor: pointer;
+  font-size: 0.95rem;
+  white-space: nowrap;
+}
+
+.todo-form button:hover {
+  background: slateblue;
+}
+
+.filters button {
+  padding: 6px 12px;
+  border-radius: 999px;
+  border: 1px solid #d1d5db;
+  background: #f9fafb;
+  font-size: 0.85rem;
+  cursor: pointer;
+}
+
+.filters button:disabled {
+  background: #2563eb;
+  color: #ffffff;
+  border-color: #2563eb;
+  cursor: default;
+}
+
+.todo-list li {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 0;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.todo-list li:last-child {
+  border-bottom: none;
+}
+
+.todo-list li span {
+  flex: 1;
+  font-size: 0.95rem;
+  color: #111827;
+}
+.todo-list input[type="checkbox"] {
+  width: 16px;
+  height: 16px;
+}
+
+.todo-list button {
+  border: none;
+  border-radius: 6px;
+  padding: 4px 8px;
+  font-size: 0.8rem;
+  cursor: pointer;
+}
+
+.todo-list button:nth-of-type(1) {
+  background: #fbbf24;
+  color: #111827;
+}
+
+.todo-list button:nth-of-type(1):hover {
+  background: #f59e0b;
+}
+
+.todo-list button:nth-of-type(2) {
+  background: #ef4444;
+  color: #ffffff;
+}
+
+.todo-list button:nth-of-type(2):hover {
+  background: #dc2626;
+}
+
+.todo-list li span[style*="line-through"] {
+  color: #6b7280;
+}

@@ -3,20 +3,23 @@
   <head>
     <meta charset="UTF-8" />
     <title>Todo App JS</title>
+    <link rel="stylesheet" href="style.css" />
     <script src="script.js" defer></script>
   </head>
   <body>
-    <h1>My todo List</h1>
-    <form id="todoForm">
-      <input type="text" id="todoInput" placeholder="New todo..." required />
-      <button type="submit">Add</button>
-    </form>
+    <div class="app">
+      <h1>My todo List</h1>
+      <form id="todoForm" class="todo-form">
+        <input type="text" id="todoInput" placeholder="New todo..." required />
+        <button type="submit">Add</button>
+      </form>
 
-    <div id="filters">
-      <button type="button" id="filterAll">All</button>
-      <button type="button" id="filterActive">Active</button>
-      <button type="button" id="filterCompleted">Completed</button>
+      <div id="filters" class="filters">
+        <button type="button" id="filterAll">All</button>
+        <button type="button" id="filterActive">Active</button>
+        <button type="button" id="filterCompleted">Completed</button>
+      </div>
+      <ul id="todoList" class="todo-list"></ul>
     </div>
-    <ul id="todoList"></ul>
   </body>
 </html>
